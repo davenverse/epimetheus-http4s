@@ -21,7 +21,7 @@ import io.chrisdavenport.epimetheus._
   * import org.http4s.client.middleware.Metrics
   * import io.chrisdavenport.epimetheus.http4s.Epimetheus
   * 
-  * val meteredRoutes = Epimetheus.register(collectorRegistry)
+  * val meteredRoutes = EpimetheusOps.register(collectorRegistry)
   *   .map(metricOps => Metrics[IO](metricOps)(testRoutes))
   * }}}
   *
@@ -32,7 +32,7 @@ import io.chrisdavenport.epimetheus._
   * import io.chrisdavenport.epimetheus.http4s.Epimetheus
   *
   * val classifierFunc = (r: Request[IO]) => Some(r.method.toString.toLowerCase)
-  * val meteredClient = Epimetheus.register(collectorRegistry)
+  * val meteredClient = EpimetheusOps.register(collectorRegistry)
   *   .map(metricOps => Metrics(metricOps, classifierFunc)(client))
   * }}}
   *
