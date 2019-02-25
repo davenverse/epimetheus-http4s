@@ -69,7 +69,6 @@ object EpimetheusOps {
     MetricsCollection.build(cr, prefix, buckets)
       .map(new EpOps(_))
 
-
   private class EpOps[F[_]: Monad](metrics: MetricsCollection[F]) extends MetricsOps[F]{
     override def increaseActiveRequests(classifier: Option[String]): F[Unit] = 
       metrics.activeRequests.label(Classifier.fromOpt(classifier)).inc
@@ -114,10 +113,10 @@ object EpimetheusOps {
 
 
   private case class MetricsCollection[F[_]](
-      responseDuration: Histogram.UnlabelledHistogram[F, (Classifier, Method, Phase)],
-      activeRequests: Gauge.UnlabelledGauge[F, Classifier],
-      requests: Counter.UnlabelledCounter[F, (Classifier, Method, Status)],
-      abnormalTerminations: Histogram.UnlabelledHistogram[F, (Classifier, TerminationType)]
+      responseDuration: UnlabelledHistogram[F, (Classifier, Method, Phase)],
+      activeRequests: UnlabelledGauge[F, Classifier],
+      requests: UnlabelledCounter[F, (Classifier, Method, Status)],
+      abnormalTerminations: UnlabelledHistogram[F, (Classifier, TerminationType)]
   )
   private object MetricsCollection {
     def build[F[_]: Sync](cr: CollectorRegistry[F], prefix: Name, buckets: List[Double]) = for {
