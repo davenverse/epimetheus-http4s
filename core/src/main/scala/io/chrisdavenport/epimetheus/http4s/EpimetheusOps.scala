@@ -12,58 +12,56 @@ import shapeless._
 import io.chrisdavenport.epimetheus._
 
 /**
- * /**
-  * `MetricsOps` algebra capable of recording Prometheus metrics
-  *
-  * For example, the following code would wrap a `org.http4s.HttpRoutes` with a `org.http4s.server.middleware.Metrics`
-  * that records metrics to a given metric registry.
-  * {{{
-  * import org.http4s.client.middleware.Metrics
-  * import io.chrisdavenport.epimetheus.http4s.Epimetheus
-  * 
-  * val meteredRoutes = EpimetheusOps.register(collectorRegistry)
-  *   .map(metricOps => Metrics[IO](metricOps)(testRoutes))
-  * }}}
-  *
-  * Analogously, the following code would wrap a `org.http4s.client.Client` with a `org.http4s.client.middleware.Metrics`
-  * that records metrics to a given metric registry, classifying the metrics by HTTP method.
-  * {{{
-  * import org.http4s.client.middleware.Metrics
-  * import io.chrisdavenport.epimetheus.http4s.Epimetheus
-  *
-  * val classifierFunc = (r: Request[IO]) => Some(r.method.toString.toLowerCase)
-  * val meteredClient = EpimetheusOps.register(collectorRegistry)
-  *   .map(metricOps => Metrics(metricOps, classifierFunc)(client))
-  * }}}
-  *
-  * Registers the following metrics:
-  *
-  * {prefix}_response_duration_seconds{labels=classifier,method,phase} - Histogram
-  *
-  * {prefix}_active_request_count{labels=classifier} - Gauge
-  *
-  * {prefix}_request_count{labels=classifier,method,status} - Counter
-  *
-  * {prefix}_abnormal_terminations{labels=classifier,termination_type} - Histogram
-  *
-  * Labels --
-  *
-  * method: Enumeration
-  * values: get, put, post, head, move, options, trace, connect, delete, other
-  *
-  * phase: Enumeration
-  * values: headers, body
-  *
-  * code: Enumeration
-  * values:  1xx, 2xx, 3xx, 4xx, 5xx
-  *
-  * termination_type: Enumeration
-  * values: abnormal, error, timeout
-  */
+ * `MetricsOps` algebra capable of recording Prometheus metrics
+ *
+ * For example, the following code would wrap a `org.http4s.HttpRoutes` with a `org.http4s.server.middleware.Metrics`
+ * that records metrics to a given metric registry.
+ * {{{
+ * import org.http4s.client.middleware.Metrics
+ * import io.chrisdavenport.epimetheus.http4s.Epimetheus
+ * 
+ * val meteredRoutes = EpimetheusOps.register(collectorRegistry)
+ *   .map(metricOps => Metrics[IO](metricOps)(testRoutes))
+ * }}}
+ *
+ * Analogously, the following code would wrap a `org.http4s.client.Client` with a `org.http4s.client.middleware.Metrics`
+ * that records metrics to a given metric registry, classifying the metrics by HTTP method.
+ * {{{
+ * import org.http4s.client.middleware.Metrics
+ * import io.chrisdavenport.epimetheus.http4s.Epimetheus
+ *
+ * val classifierFunc = (r: Request[IO]) => Some(r.method.toString.toLowerCase)
+ * val meteredClient = EpimetheusOps.register(collectorRegistry)
+ *   .map(metricOps => Metrics(metricOps, classifierFunc)(client))
+ * }}}
+ *
+ * Registers the following metrics:
+ *
+ * {prefix}_response_duration_seconds{labels=classifier,method,phase} - Histogram
+ *
+ * {prefix}_active_request_count{labels=classifier} - Gauge
+ *
+ * {prefix}_request_count{labels=classifier,method,status} - Counter
+ *
+ * {prefix}_abnormal_terminations{labels=classifier,termination_type} - Histogram
+ *
+ * Labels --
+ *
+ * method: Enumeration
+ * values: get, put, post, head, move, options, trace, connect, delete, other
+ *
+ * phase: Enumeration
+ * values: headers, body
+ *
+ * code: Enumeration
+ * values:  1xx, 2xx, 3xx, 4xx, 5xx
+ *
+ * termination_type: Enumeration
+ * values: abnormal, error, timeout
  */
 object EpimetheusOps {
 
-  def register[F[_]: Sync: Clock](
+  def register[F[_]: Sync](
     cr: CollectorRegistry[F], 
     prefix: String = "org_http4s_server",
     buckets: List[Double] = Histogram.defaults
@@ -121,7 +119,7 @@ object EpimetheusOps {
       abnormalTerminations: Histogram.UnlabelledHistogram[F, (Classifier, TerminationType)]
   )
   private object MetricsCollection {
-    def build[F[_]: Sync: Clock](cr: CollectorRegistry[F], prefix: String, buckets: List[Double]) = for {
+    def build[F[_]: Sync](cr: CollectorRegistry[F], prefix: String, buckets: List[Double]) = for {
       responseDuration <- Histogram.labelledBuckets(
         cr,
         prefix + "_" + "response_duration_seconds",
@@ -156,7 +154,7 @@ object EpimetheusOps {
   }
 
   private def encodeResponseDuration(s: (Classifier, Method, Phase)) = s match {
-    case (classifier, method, phase) => Sized(classifier.s, reportMethod(method), Phase.report(phase))
+    case (classifier, method, phase) => Sized(classifier.s, reportMethod(method), reportPhase(phase))
   }
 
   private def encodeRequest(s: (Classifier, Method, Status)) = s match {
@@ -166,9 +164,6 @@ object EpimetheusOps {
   private def encodeAbnormal(s: (Classifier, TerminationType)) = s match {
     case (classifier, term) => Sized(classifier.s, reportTermination(term))
   }
-
-
-
 
   private def reportStatus(status: Status): String =
     status.code match {
@@ -192,10 +187,15 @@ object EpimetheusOps {
     case _ => "other"
   }
 
-  def reportTermination(t: TerminationType): String = t match {
+  private def reportTermination(t: TerminationType): String = t match {
     case Abnormal => "abnormal"
     case Error => "error"
     case Timeout => "timeout"
+  }
+
+  private def reportPhase(p: Phase): String = p match {
+    case Phase.Headers => "headers"
+    case Phase.Body => "body"
   }
 
   private[EpimetheusOps] class Classifier(val s: String) extends AnyVal
@@ -208,9 +208,5 @@ object EpimetheusOps {
   private[EpimetheusOps] object Phase {
     case object Headers extends Phase
     case object Body extends Phase
-    def report(s: Phase): String = s match {
-      case Headers => "headers"
-      case Body => "body"
-    }
   }
 }
