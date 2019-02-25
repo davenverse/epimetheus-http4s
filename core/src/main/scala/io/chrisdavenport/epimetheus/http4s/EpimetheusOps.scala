@@ -61,7 +61,7 @@ import io.chrisdavenport.epimetheus._
   * values: abnormal, error, timeout
   */
  */
-object Epimetheus {
+object EpimetheusOps {
 
   def register[F[_]: Sync: Clock](
     cr: CollectorRegistry[F], 
@@ -69,9 +69,9 @@ object Epimetheus {
     buckets: List[Double] = Histogram.defaults
   ): F[MetricsOps[F]] = 
     MetricsCollection.build(cr, prefix, buckets)
-      .map(new EpimetheusOps(_))
+      .map(new EpOps(_))
 
-  private class EpimetheusOps[F[_]: Monad](metrics: MetricsCollection[F]) extends MetricsOps[F]{
+  private class EpOps[F[_]: Monad](metrics: MetricsCollection[F]) extends MetricsOps[F]{
     override def increaseActiveRequests(classifier: Option[String]): F[Unit] = 
       metrics.activeRequests.label(Classifier.fromOpt(classifier)).inc
 
@@ -198,14 +198,14 @@ object Epimetheus {
     case Timeout => "timeout"
   }
 
-  private[Epimetheus] class Classifier(val s: String) extends AnyVal
-  private[Epimetheus] object Classifier {
+  private[EpimetheusOps] class Classifier(val s: String) extends AnyVal
+  private[EpimetheusOps] object Classifier {
     def fromOpt(s: Option[String]): Classifier = new Classifier(s.getOrElse(""))
   }
 
 
-  private[Epimetheus] sealed trait Phase
-  private[Epimetheus] object Phase {
+  private[EpimetheusOps] sealed trait Phase
+  private[EpimetheusOps] object Phase {
     case object Headers extends Phase
     case object Body extends Phase
     def report(s: Phase): String = s match {
