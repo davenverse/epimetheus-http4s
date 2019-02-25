@@ -26,6 +26,8 @@ val shapelessV = "2.3.3"
 val fs2V = "1.0.3"
 val http4sV = "0.20.0-M6"
 
+lazy val epimetheusV = "0.0.8"
+
 val specs2V = "4.4.1"
 
 val kindProjectorV = "0.9.9"
@@ -59,7 +61,7 @@ lazy val commonSettings = Seq(
     "org.http4s"                  %% "http4s-core"                % http4sV,
     "org.http4s"                  %% "http4s-dsl"                 % http4sV,
 
-    "io.chrisdavenport"           %% "epimetheus"                 % "0.0.7",
+    "io.chrisdavenport"           %% "epimetheus"                 % epimetheusV,
 
     "org.specs2"                  %% "specs2-core"                % specs2V       % Test,
     "org.specs2"                  %% "specs2-scalacheck"          % specs2V       % Test
