@@ -63,11 +63,12 @@ object EpimetheusOps {
 
   def register[F[_]: Sync](
     cr: CollectorRegistry[F], 
-    prefix: String = "org_http4s_server",
+    prefix: Name = Name("org_http4s_server"),
     buckets: List[Double] = Histogram.defaults
   ): F[MetricsOps[F]] = 
     MetricsCollection.build(cr, prefix, buckets)
       .map(new EpOps(_))
+
 
   private class EpOps[F[_]: Monad](metrics: MetricsCollection[F]) extends MetricsOps[F]{
     override def increaseActiveRequests(classifier: Option[String]): F[Unit] = 
@@ -119,34 +120,34 @@ object EpimetheusOps {
       abnormalTerminations: Histogram.UnlabelledHistogram[F, (Classifier, TerminationType)]
   )
   private object MetricsCollection {
-    def build[F[_]: Sync](cr: CollectorRegistry[F], prefix: String, buckets: List[Double]) = for {
+    def build[F[_]: Sync](cr: CollectorRegistry[F], prefix: Name, buckets: List[Double]) = for {
       responseDuration <- Histogram.labelledBuckets(
         cr,
-        prefix + "_" + "response_duration_seconds",
+        prefix |+| Name("_") |+| Name("response_duration_seconds"),
         "Response Duration in seconds.",
-        Sized("classifier","method","phase"),
+        Sized(Name("classifier"),Name("method"),Name("phase")),
         encodeResponseDuration,
         buckets:_*
       )
       activeRequests <- Gauge.labelled(
         cr, 
-        prefix + "_" + "active_request_count",
+        prefix |+| Name("_") |+| Name("active_request_count"),
         "Total Active Requests.",
-        Sized("classifier"),
+        Sized(Name("classifier")),
         {c: Classifier => Sized(c.s)}
       )
       requests <- Counter.labelled(
         cr,
-        prefix + "_" + "request_count",
+        prefix |+| Name("_") |+| Name("request_count"),
         "Total Requests.",
-        Sized("classifier", "method", "status"),
+        Sized(Name("classifier"), Name("method"), Name("status")),
         encodeRequest
       )
       abnormal <- Histogram.labelledBuckets(
         cr,
-        prefix + "_" + "abnormal_terminations",
+        prefix |+| Name("_") |+| Name("abnormal_terminations"),
         "Total Abnormal Terminations.",
-        Sized("classifier", "termination_type"),
+        Sized(Name("classifier"), Name("termination_type")),
         encodeAbnormal,
         buckets:_*
       )
