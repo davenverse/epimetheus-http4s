@@ -61,9 +61,21 @@ import io.chrisdavenport.epimetheus._
  */
 object EpimetheusOps {
 
+  def server[F[_]: Sync](
+    cr: CollectorRegistry[F],
+    buckets: List[Double] = Histogram.defaults
+  ): F[MetricsOps[F]] = 
+    register(cr, Name("org_http4s_server"), buckets)
+
+  def  client[F[_]: Sync](
+    cr: CollectorRegistry[F],
+    buckets: List[Double] = Histogram.defaults
+  ): F[MetricsOps[F]] = 
+    register(cr, Name("org_http4s_client"), buckets)
+
   def register[F[_]: Sync](
     cr: CollectorRegistry[F], 
-    prefix: Name = Name("org_http4s_server"),
+    prefix: Name,
     buckets: List[Double] = Histogram.defaults
   ): F[MetricsOps[F]] = 
     MetricsCollection.build(cr, prefix, buckets)
