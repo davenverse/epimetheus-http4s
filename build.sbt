@@ -10,6 +10,15 @@ lazy val core = project.in(file("core"))
     name := "epimetheus-http4s"
   )
 
+lazy val push = project.in(file("pushgateway"))
+.settings(commonSettings, releaseSettings, mimaSettings)
+.settings(
+  name := "epimetheus-http4s-pushgateway",
+  libraryDependencies ++= Seq(
+    "org.http4s" %% "http4s-client" % http4sV
+  )
+)
+
 lazy val docs = project.in(file("docs"))
   .settings(commonSettings, skipOnPublishSettings, micrositeSettings)
   .dependsOn(core)
