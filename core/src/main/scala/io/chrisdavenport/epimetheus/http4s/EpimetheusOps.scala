@@ -136,7 +136,7 @@ object EpimetheusOps {
         cr,
         prefix |+| Name("_") |+| Name("response_duration_seconds"),
         "Response Duration in seconds.",
-        Sized(Name("classifier"),Name("method"),Name("phase")),
+        Sized(Label("classifier"),Label("method"), Label("phase")),
         encodeResponseDuration,
         buckets:_*
       )
@@ -144,21 +144,21 @@ object EpimetheusOps {
         cr, 
         prefix |+| Name("_") |+| Name("active_request_count"),
         "Total Active Requests.",
-        Sized(Name("classifier")),
+        Sized(Label("classifier")),
         {c: Classifier => Sized(c.s)}
       )
       requests <- Counter.labelled(
         cr,
         prefix |+| Name("_") |+| Name("request_count"),
         "Total Requests.",
-        Sized(Name("classifier"), Name("method"), Name("status")),
+        Sized(Label("classifier"), Label("method"), Label("status")),
         encodeRequest
       )
       abnormal <- Histogram.labelledBuckets(
         cr,
         prefix |+| Name("_") |+| Name("abnormal_terminations"),
         "Total Abnormal Terminations.",
-        Sized(Name("classifier"), Name("termination_type")),
+        Sized(Label("classifier"), Label("termination_type")),
         encodeAbnormal,
         buckets:_*
       )

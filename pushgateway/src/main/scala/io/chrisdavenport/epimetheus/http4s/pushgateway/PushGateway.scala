@@ -61,7 +61,6 @@ object PushGateway {
     val uri = requestUrl(baseUri, job, groupingKey)
     client.expectOr[Unit](Request[F](Method.DELETE, uri))(errorHandler(uri))
   }
-    
 
   private def doPost[F[_]: Sync](
     client: Client[F],
