@@ -23,6 +23,7 @@ lazy val push = project.in(file("pushgateway"))
 lazy val docs = project.in(file("docs"))
   .settings(commonSettings, skipOnPublishSettings, micrositeSettings)
   .dependsOn(core)
+  .disablePlugins(MimaPlugin)
   .enablePlugins(MicrositesPlugin)
   .enablePlugins(TutPlugin)
 
