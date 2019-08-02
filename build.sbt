@@ -35,7 +35,7 @@ val catsV = "1.6.1"
 val catsEffectV = "1.4.0"
 val shapelessV = "2.3.3"
 val fs2V = "1.0.5"
-val http4sV = "0.20.7"
+val http4sV = "0.20.8"
 
 
 lazy val epimetheusV = "0.2.2"
