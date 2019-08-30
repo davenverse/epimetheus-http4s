@@ -38,7 +38,7 @@ val fs2V = "1.1.0-M1"
 val http4sV = "0.21.0-M4"
 
 
-lazy val epimetheusV = "0.3.0-RC1"
+lazy val epimetheusV = "0.3.0-RC2"
 
 val specs2V = "4.7.0"
 
