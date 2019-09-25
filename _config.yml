@@ -6,6 +6,6 @@ docs: true
 collections:
   tut:
     output: true
-version: 0.3.0-RC1+33-2179b04c-SNAPSHOT
+version: 0.3.0-RC1+35-85e84229-SNAPSHOT
 org: io.chrisdavenport
 markdown: kramdown
