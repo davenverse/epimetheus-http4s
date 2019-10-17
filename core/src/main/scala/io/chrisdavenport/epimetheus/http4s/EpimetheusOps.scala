@@ -63,22 +63,28 @@ object EpimetheusOps {
 
   def server[F[_]: Sync](
     cr: CollectorRegistry[F],
-    buckets: List[Double] = Histogram.defaults
+    buckets: List[Double] = Histogram.defaults,
+    reportMethod: Method => String = EpimetheusOps.defaultReportMethod,
+    reportStatus: Status => String = EpimetheusOps.defaultReportStatus
   ): F[MetricsOps[F]] = 
-    register(cr, Name("org_http4s_server"), buckets)
+    register(cr, Name("org_http4s_server"), buckets, reportMethod, reportStatus)
 
   def  client[F[_]: Sync](
     cr: CollectorRegistry[F],
-    buckets: List[Double] = Histogram.defaults
+    buckets: List[Double] = Histogram.defaults,
+    reportMethod: Method => String = EpimetheusOps.defaultReportMethod,
+    reportStatus: Status => String = EpimetheusOps.defaultReportStatus
   ): F[MetricsOps[F]] = 
-    register(cr, Name("org_http4s_client"), buckets)
+    register(cr, Name("org_http4s_client"), buckets, reportMethod, reportStatus)
 
   def register[F[_]: Sync](
     cr: CollectorRegistry[F], 
     prefix: Name,
-    buckets: List[Double] = Histogram.defaults
+    buckets: List[Double] = Histogram.defaults,
+    reportMethod: Method => String = EpimetheusOps.defaultReportMethod,
+    reportStatus: Status => String = EpimetheusOps.defaultReportStatus
   ): F[MetricsOps[F]] = 
-    MetricsCollection.build(cr, prefix, buckets)
+    MetricsCollection.build(cr, prefix, buckets, reportMethod, reportStatus)
       .map(new EpOps(_))
 
   private class EpOps[F[_]: Monad](metrics: MetricsCollection[F]) extends MetricsOps[F]{
@@ -131,13 +137,19 @@ object EpimetheusOps {
       abnormalTerminations: UnlabelledHistogram[F, (Classifier, TerminationType)]
   )
   private object MetricsCollection {
-    def build[F[_]: Sync](cr: CollectorRegistry[F], prefix: Name, buckets: List[Double]) = for {
+    def build[F[_]: Sync](
+      cr: CollectorRegistry[F],
+      prefix: Name, 
+      buckets: List[Double],
+      reportMethod: Method => String,
+      reportStatus: Status => String
+    ) = for {
       responseDuration <- Histogram.labelledBuckets(
         cr,
         prefix |+| Name("_") |+| Name("response_duration_seconds"),
         "Response Duration in seconds.",
         Sized(Label("classifier"),Label("method"), Label("phase")),
-        encodeResponseDuration,
+        encodeResponseDuration(_, reportMethod),
         buckets:_*
       )
       activeRequests <- Gauge.labelled(
@@ -152,7 +164,7 @@ object EpimetheusOps {
         prefix |+| Name("_") |+| Name("request_count"),
         "Total Requests.",
         Sized(Label("classifier"), Label("method"), Label("status")),
-        encodeRequest
+        encodeRequest(_, reportMethod, reportStatus)
       )
       abnormal <- Histogram.labelledBuckets(
         cr,
@@ -165,11 +177,11 @@ object EpimetheusOps {
     } yield MetricsCollection[F](responseDuration, activeRequests, requests, abnormal)
   }
 
-  private def encodeResponseDuration(s: (Classifier, Method, Phase)) = s match {
+  private def encodeResponseDuration(s: (Classifier, Method, Phase), reportMethod: Method => String) = s match {
     case (classifier, method, phase) => Sized(classifier.s, reportMethod(method), reportPhase(phase))
   }
 
-  private def encodeRequest(s: (Classifier, Method, Status)) = s match {
+  private def encodeRequest(s: (Classifier, Method, Status), reportMethod: Method => String, reportStatus: Status => String) = s match {
     case (classifier, method, status) => Sized(classifier.s, reportMethod(method), reportStatus(status))
   }
 
@@ -177,7 +189,7 @@ object EpimetheusOps {
     case (classifier, term) => Sized(classifier.s, reportTermination(term))
   }
 
-  private def reportStatus(status: Status): String =
+  def defaultReportStatus(status: Status): String =
     status.code match {
       case hundreds if hundreds < 200 => "1xx"
       case twohundreds if twohundreds < 300 => "2xx"
@@ -186,7 +198,8 @@ object EpimetheusOps {
       case _ => "5xx"
     }
 
-  private def reportMethod(m: Method): String = m match {
+
+  def defaultReportMethod(m: Method): String = m match {
     case Method.GET => "get"
     case Method.PUT => "put"
     case Method.POST => "post"
