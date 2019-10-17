@@ -31,10 +31,10 @@ lazy val contributors = Seq(
   "ChristopherDavenport" -> "Christopher Davenport"
 )
 
-val catsV = "2.0.0-RC2"
-val catsEffectV = "2.0.0-RC2"
+val catsV = "2.0.0"
+val catsEffectV = "2.0.0"
 val shapelessV = "2.3.3"
-val fs2V = "1.1.0-M1"
+val fs2V = "2.0.1"
 val http4sV = "0.21.0-M5"
 
 
@@ -42,24 +42,23 @@ lazy val epimetheusV = "0.3.0"
 
 val specs2V = "4.8.0"
 
-val kindProjectorV = "0.10.3"
+val kindProjectorV = "0.11.0"
 val betterMonadicForV = "0.3.1"
 
 // General Settings
 lazy val commonSettings = Seq(
   organization := "io.chrisdavenport",
 
-  scalaVersion := "2.13.0",
-  crossScalaVersions := Seq(scalaVersion.value, "2.12.9"),
-  scalacOptions += "-Yrangepos",
-
+  scalaVersion := "2.13.1",
+  crossScalaVersions := Seq(scalaVersion.value, "2.12.10"),
+  
   scalacOptions in (Compile, doc) ++= Seq(
       "-groups",
       "-sourcepath", (baseDirectory in LocalRootProject).value.getAbsolutePath,
       "-doc-source-url", "https://github.com/ChristopherDavenport/epimetheus-http4s/blob/v" + version.value + "€{FILE_PATH}.scala"
   ),
 
-  addCompilerPlugin("org.typelevel" % "kind-projector" % kindProjectorV cross CrossVersion.binary),
+  addCompilerPlugin("org.typelevel" %% "kind-projector" % kindProjectorV cross CrossVersion.full),
   addCompilerPlugin("com.olegpy" %% "better-monadic-for" % betterMonadicForV),
   libraryDependencies ++= Seq(
     "org.typelevel"               %% "cats-core"                  % catsV,
