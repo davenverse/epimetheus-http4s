@@ -40,7 +40,7 @@ val http4sV = "0.21.0-M5"
 
 lazy val epimetheusV = "0.3.0"
 
-val specs2V = "4.8.0"
+val specs2V = "4.8.1"
 
 val kindProjectorV = "0.11.0"
 val betterMonadicForV = "0.3.1"
