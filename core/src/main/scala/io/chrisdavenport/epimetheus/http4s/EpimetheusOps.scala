@@ -69,7 +69,7 @@ object EpimetheusOps {
   ): F[MetricsOps[F]] = 
     register(cr, Name("org_http4s_server"), buckets, reportMethod, reportStatus)
 
-  def  client[F[_]: Sync](
+  def client[F[_]: Sync](
     cr: CollectorRegistry[F],
     buckets: List[Double] = Histogram.defaults,
     reportMethod: Method => String = EpimetheusOps.defaultReportMethod,
@@ -122,7 +122,6 @@ object EpimetheusOps {
       metrics.abnormalTerminations.label((Classifier.fromOpt(classifier), terminationType))
         .observe(nanosToSeconds(elapsed))
   }
-
 
   // Elapsed is in Nanos, but buckets are in Seconds
   private def nanosToSeconds(l: Long): Double = 
@@ -198,6 +197,7 @@ object EpimetheusOps {
       case _ => "5xx"
     }
 
+  def secondaryReportStatus(status: Status): String = status.code.show
 
   def defaultReportMethod(m: Method): String = m match {
     case Method.GET => "get"
@@ -211,6 +211,8 @@ object EpimetheusOps {
     case Method.DELETE => "delete"
     case _ => "other"
   }
+
+  def secondaryReportMethod(m: Method): String = m.name.toLowerCase()
 
   private def reportTermination(t: TerminationType): String = t match {
     case Abnormal => "abnormal"
