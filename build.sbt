@@ -3,7 +3,7 @@ import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 lazy val `epimetheus-http4s` = project.in(file("."))
   .disablePlugins(MimaPlugin)
   .settings(commonSettings, releaseSettings, skipOnPublishSettings)
-  .aggregate(core)
+  .aggregate(core, push)
 
 lazy val core = project.in(file("core"))
   .settings(commonSettings, releaseSettings, mimaSettings)
