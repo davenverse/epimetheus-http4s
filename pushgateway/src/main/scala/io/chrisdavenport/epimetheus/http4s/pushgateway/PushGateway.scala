@@ -45,7 +45,7 @@ object PushGateway {
 
   private def errorHandler[F[_]: Sync](uri: Uri)(resp: Response[F]): F[Throwable] = 
     for {
-      body <- resp.bodyAsText.compile.foldMonoid
+      body <- resp.bodyText.compile.string
       status = resp.status
     } yield new Exception(show"Response code from ${uri.renderString} was $status, response body: $body")
 
