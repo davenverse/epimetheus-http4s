@@ -34,15 +34,15 @@ lazy val contributors = Seq(
 val catsV = "2.1.1"
 val catsEffectV = "2.1.4"
 val shapelessV = "2.3.3"
-val fs2V = "2.4.5"
-val http4sV = "0.21.9"
+val fs2V = "2.4.6"
+val http4sV = "0.21.13"
 
 
 lazy val epimetheusV = "0.4.0"
 
 val specs2V = "4.10.4"
 
-val kindProjectorV = "0.11.0"
+val kindProjectorV = "0.11.2"
 val betterMonadicForV = "0.3.1"
 
 // General Settings
