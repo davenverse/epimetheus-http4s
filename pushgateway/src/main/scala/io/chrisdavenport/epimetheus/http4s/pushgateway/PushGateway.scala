@@ -4,7 +4,7 @@ package pushgateway
 
 import org.http4s._
 import cats.effect._
-import cats.implicits._
+import cats.syntax.all._
 import org.http4s.client._
 
 abstract class PushGateway[F[_]]{
