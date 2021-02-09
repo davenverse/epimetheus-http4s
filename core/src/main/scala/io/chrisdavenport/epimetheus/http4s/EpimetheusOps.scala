@@ -1,7 +1,7 @@
 package io.chrisdavenport.epimetheus.http4s
 
 import cats._
-import cats.implicits._
+import cats.syntax.all._
 import cats.effect._
 import org.http4s.{Method, Status}
 import org.http4s.metrics.MetricsOps
