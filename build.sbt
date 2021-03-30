@@ -31,26 +31,26 @@ lazy val contributors = Seq(
   "ChristopherDavenport" -> "Christopher Davenport"
 )
 
-val catsV = "2.1.1"
-val catsEffectV = "2.1.4"
+val catsV = "2.6.1"
+val catsEffectV = "3.1.1"
 val shapelessV = "2.3.3"
-val fs2V = "2.4.6"
-val http4sV = "0.21.18"
+val fs2V = "3.0.4"
+val http4sV = "1.0.0-M23"
 
 
-lazy val epimetheusV = "0.4.0"
+lazy val epimetheusV = "0.5.0-M1"
 
 val specs2V = "4.10.6"
 
-val kindProjectorV = "0.11.3"
+val kindProjectorV = "0.13.0"
 val betterMonadicForV = "0.3.1"
 
 // General Settings
 lazy val commonSettings = Seq(
   organization := "io.chrisdavenport",
 
-  scalaVersion := "2.13.1",
-  crossScalaVersions := Seq(scalaVersion.value, "2.12.10"),
+  scalaVersion := "2.13.6",
+  crossScalaVersions := Seq(scalaVersion.value, "2.12.14"),
   
   scalacOptions in (Compile, doc) ++= Seq(
       "-groups",
@@ -193,7 +193,7 @@ lazy val micrositeSettings = {
       "-Ywarn-unused:imports",
       "-Xlint:-missing-interpolator,_"
     ),
-    libraryDependencies += "com.47deg" %% "github4s" % "0.20.1",
+    libraryDependencies += "com.47deg" %% "github4s" % "0.28.1",
     micrositePushSiteWith := GitHub4s,
     micrositeGithubToken := sys.env.get("GITHUB_TOKEN"),
     micrositeExtraMdFiles := Map(
