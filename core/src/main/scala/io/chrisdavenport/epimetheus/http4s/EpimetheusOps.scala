@@ -6,7 +6,7 @@ import cats.effect._
 import org.http4s.{Method, Status}
 import org.http4s.metrics.MetricsOps
 import org.http4s.metrics.TerminationType
-import org.http4s.metrics.TerminationType.{Abnormal, Error, Timeout}
+import org.http4s.metrics.TerminationType.{Abnormal, Error, Timeout, Canceled}
 import shapeless._
 
 import io.chrisdavenport.epimetheus._
@@ -215,8 +215,9 @@ object EpimetheusOps {
   def secondaryReportMethod(m: Method): String = m.name.toLowerCase()
 
   private def reportTermination(t: TerminationType): String = t match {
-    case Abnormal => "abnormal"
-    case Error => "error"
+    case Canceled => "canceled"
+    case Abnormal(_) => "abnormal"
+    case Error(_) => "error"
     case Timeout => "timeout"
   }
 
