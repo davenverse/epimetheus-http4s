@@ -21,11 +21,11 @@ abstract class PushGateway[F[_]]{
 
 object PushGateway {
 
-  def fromClient[F[_]: Sync](c: Client[F], serverUri: Uri): PushGateway[F] =
+  def fromClient[F[_]: Concurrent](c: Client[F], serverUri: Uri): PushGateway[F] =
     new BasicPushGateway[F](c, serverUri)
   
 
-  private class BasicPushGateway[F[_]: Sync](val client: Client[F], uri: Uri) extends PushGateway[F]{
+  private class BasicPushGateway[F[_]: Concurrent](val client: Client[F], uri: Uri) extends PushGateway[F]{
     def push(cr: CollectorRegistry[F], job: String): F[Unit] = 
       push(cr, job, Map.empty)
     def push(cr: CollectorRegistry[F], job: String, groupingKey: Map[String, String]): F[Unit] =
@@ -43,7 +43,7 @@ object PushGateway {
 
   }
 
-  private def errorHandler[F[_]: Sync](uri: Uri)(resp: Response[F]): F[Throwable] = 
+  private def errorHandler[F[_]: Concurrent](uri: Uri)(resp: Response[F]): F[Throwable] = 
     for {
       body <- resp.bodyText.compile.string
       status = resp.status
@@ -52,7 +52,7 @@ object PushGateway {
   private def requestUrl(baseUri: Uri, job: String, groupingKey: Map[String, String]): Uri =
     groupingKey.toList.foldLeft(baseUri / "metrics" / "job" /  job){ case (next, (k, v)) => next / k / v }
 
-  private def doDelete[F[_]: Sync](
+  private def doDelete[F[_]: Concurrent](
     client: Client[F], 
     baseUri: Uri, 
     job: String, 
@@ -62,7 +62,7 @@ object PushGateway {
     client.expectOr[Unit](Request[F](Method.DELETE, uri))(errorHandler(uri))
   }
 
-  private def doPost[F[_]: Sync](
+  private def doPost[F[_]: Concurrent](
     client: Client[F],
     baseUri: Uri,
     job: String,
@@ -75,7 +75,7 @@ object PushGateway {
     }
   }
 
-  private def doPut[F[_]: Sync](
+  private def doPut[F[_]: Concurrent](
     client: Client[F],
     baseUri: Uri,
     job: String,
