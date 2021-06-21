@@ -100,20 +100,17 @@ lazy val epimetheusV = "0.4.0"
 
 val specs2V = "4.10.6"
 
-val kindProjectorV = "0.11.3"
+val kindProjectorV = "0.13.0"
 val betterMonadicForV = "0.3.1"
 
 // General Settings
 lazy val commonSettings = Seq(
   organization := "io.chrisdavenport",
 
-  scalaVersion := "2.13.1",
-  crossScalaVersions := Seq(scalaVersion.value, "2.12.10"),
-  
   scalacOptions in (Compile, doc) ++= Seq(
       "-groups",
       "-sourcepath", (baseDirectory in LocalRootProject).value.getAbsolutePath,
-      "-doc-source-url", "https://github.com/ChristopherDavenport/epimetheus-http4s/blob/v" + version.value + "€{FILE_PATH}.scala"
+      "-doc-source-url", "https://github.com/davenverse/epimetheus-http4s/blob/v" + version.value + "€{FILE_PATH}.scala"
   ),
 
   addCompilerPlugin("org.typelevel" %% "kind-projector" % kindProjectorV cross CrossVersion.full),
@@ -242,7 +239,7 @@ lazy val micrositeSettings = {
       "gray-lighter" -> "#F4F3F4",
       "white-color" -> "#FFFFFF"
     ),
-    libraryDependencies += "com.47deg" %% "github4s" % "0.20.1",
+    libraryDependencies += "com.47deg" %% "github4s" % "0.28.5",
     micrositePushSiteWith := GitHub4s,
     micrositeGithubToken := sys.env.get("GITHUB_TOKEN"),
     micrositeExtraMdFiles := Map(
