@@ -193,7 +193,10 @@ lazy val mimaSettings = {
     }
   }
   // Safety Net For Exclusions
-  lazy val excludedVersions: Set[String] = Set()
+  lazy val excludedVersions: Set[String] = Set(
+    "0.4.0",
+    "0.4.1"
+  )
 
   // Safety Net for Inclusions
   lazy val extraVersions: Set[String] = Set()
