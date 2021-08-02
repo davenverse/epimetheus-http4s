@@ -2,7 +2,7 @@ import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
 val Scala213 = "2.13.6"
 
-ThisBuild / crossScalaVersions := Seq("2.12.14", Scala213)
+ThisBuild / crossScalaVersions := Seq("2.12.14", Scala213, "3.0.1")
 ThisBuild / scalaVersion := crossScalaVersions.value.last
 
 ThisBuild / githubWorkflowArtifactUpload := false
@@ -90,13 +90,13 @@ lazy val contributors = Seq(
 )
 
 val catsV = "2.6.1"
-val catsEffectV = "3.1.1"
+val catsEffectV = "3.2.1"
 val shapelessV = "2.3.7"
-val fs2V = "3.0.4"
-val http4sV = "0.23.0-RC1"
-lazy val epimetheusV = "0.5.0-M1"
+val fs2V = "3.0.6"
+val http4sV = "0.23.0"
+lazy val epimetheusV = "0.4.0+63-847db765-SNAPSHOT"
 
-val specs2V = "4.12.1"
+val munitCatsEffectV = "1.0.5"
 
 val kindProjectorV = "0.13.0"
 val betterMonadicForV = "0.3.1"
@@ -105,19 +105,15 @@ val betterMonadicForV = "0.3.1"
 lazy val commonSettings = Seq(
   organization := "io.chrisdavenport",
 
-  scalacOptions in (Compile, doc) ++= Seq(
+  Compile / doc / scalacOptions ++= Seq(
       "-groups",
-      "-sourcepath", (baseDirectory in LocalRootProject).value.getAbsolutePath,
+      "-sourcepath", (LocalRootProject / baseDirectory).value.getAbsolutePath,
       "-doc-source-url", "https://github.com/davenverse/epimetheus-http4s/blob/v" + version.value + "€{FILE_PATH}.scala"
   ),
 
-  addCompilerPlugin("org.typelevel" %% "kind-projector" % kindProjectorV cross CrossVersion.full),
-  addCompilerPlugin("com.olegpy" %% "better-monadic-for" % betterMonadicForV),
   libraryDependencies ++= Seq(
     "org.typelevel"               %% "cats-core"                  % catsV,
     "org.typelevel"               %% "cats-effect"                % catsEffectV,
-
-    "com.chuusai"                 %% "shapeless"                  % shapelessV,
 
     "co.fs2"                      %% "fs2-core"                   % fs2V,
     "co.fs2"                      %% "fs2-io"                     % fs2V,
@@ -127,14 +123,23 @@ lazy val commonSettings = Seq(
 
     "io.chrisdavenport"           %% "epimetheus"                 % epimetheusV,
 
-    "org.specs2"                  %% "specs2-core"                % specs2V       % Test,
-    "org.specs2"                  %% "specs2-scalacheck"          % specs2V       % Test
-  )
+    "org.typelevel"               %%% "munit-cats-effect-3"       % munitCatsEffectV  % Test
+  ),
+  libraryDependencies ++= PartialFunction.condOpt(CrossVersion.partialVersion(scalaVersion.value)) { case Some((2, _)) =>
+    Seq(
+      compilerPlugin("org.typelevel" %  "kind-projector"     % kindProjectorV cross CrossVersion.full),
+      compilerPlugin("com.olegpy"    %% "better-monadic-for" % betterMonadicForV),
+      "org.scala-lang"              % "scala-reflect"               % scalaVersion.value,
+      "com.chuusai"                 %% "shapeless"                  % shapelessV
+    )
+  }
+    .toList
+    .flatten
 )
 
 lazy val releaseSettings = {
   Seq(
-    publishArtifact in Test := false,
+    Test / publishArtifact := false,
     scmInfo := Some(
       ScmInfo(
         url("https://github.com/ChristopherDavenport/epimetheus-http4s"),
@@ -240,7 +245,7 @@ lazy val micrositeSettings = {
       "gray-lighter" -> "#F4F3F4",
       "white-color" -> "#FFFFFF"
     ),
-    libraryDependencies += "com.47deg" %% "github4s" % "0.28.5",
+    libraryDependencies += "com.47deg" %% "github4s" % "0.29.1",
     micrositePushSiteWith := GitHub4s,
     micrositeGithubToken := sys.env.get("GITHUB_TOKEN"),
     micrositeExtraMdFiles := Map(
@@ -252,7 +257,7 @@ lazy val micrositeSettings = {
 }
 
 lazy val skipOnPublishSettings = Seq(
-  skip in publish := true,
+  publish / skip := true,
   publish := (()),
   publishLocal := (()),
   publishArtifact := false,
