@@ -7,7 +7,6 @@ import org.http4s.{Method, Status}
 import org.http4s.metrics.MetricsOps
 import org.http4s.metrics.TerminationType
 import org.http4s.metrics.TerminationType.{Abnormal, Error, Timeout, Canceled}
-import shapeless._
 
 import io.chrisdavenport.epimetheus._
 
@@ -156,7 +155,7 @@ object EpimetheusOps {
         prefix |+| Name("_") |+| Name("active_request_count"),
         "Total Active Requests.",
         Sized(Label("classifier")),
-        {c: Classifier => Sized(c.s)}
+        {(c: Classifier) => Sized(c.s)}
       )
       requests <- Counter.labelled(
         cr,
