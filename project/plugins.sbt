@@ -1,2 +1,3 @@
-addSbtPlugin("io.github.davidgregory084" % "sbt-tpolecat" % "0.3.1")
-addSbtPlugin("io.chrisdavenport" % "sbt-davenverse" % "0.1.4")
+addSbtPlugin("org.typelevel" % "sbt-typelevel-ci-release" % "0.4.19")
+addSbtPlugin("org.typelevel" % "sbt-typelevel-site" % "0.4.19")
+addSbtPlugin("org.typelevel" % "sbt-typelevel-settings" % "0.4.19")
