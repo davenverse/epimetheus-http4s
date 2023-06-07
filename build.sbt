@@ -14,8 +14,8 @@ ThisBuild / tlCiReleaseBranches := Seq("main")
 ThisBuild / tlSonatypeUseLegacyHost := true
 
 
-ThisBuild / crossScalaVersions := Seq("2.12.15", "2.13.8", "3.2.2")
-ThisBuild / scalaVersion := "2.13.8"
+ThisBuild / crossScalaVersions := Seq("2.12.15", "2.13.11", "3.2.2")
+ThisBuild / scalaVersion := "2.13.11"
 ThisBuild / versionScheme := Some("early-semver")
 
 val catsV = "2.9.0"
