@@ -18,7 +18,7 @@ ThisBuild / crossScalaVersions := Seq("2.12.15", "2.13.8", "3.2.2")
 ThisBuild / scalaVersion := "2.13.8"
 ThisBuild / versionScheme := Some("early-semver")
 
-val catsV = "2.9.0"
+val catsV = "2.10.0"
 val catsEffectV = "3.4.8"
 val shapelessV = "2.3.7"
 val fs2V = "3.6.1"
