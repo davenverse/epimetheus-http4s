@@ -60,6 +60,6 @@ lazy val sharedDeps = Seq(
 
       "io.chrisdavenport"           %% "epimetheus"                 % epimetheusV,
 
-      "org.typelevel" %% "munit-cats-effect-3" % "1.0.7" % Test,
+      "org.typelevel" %% "munit-cats-effect" % "2.0.0" % Test,
     )
 )
