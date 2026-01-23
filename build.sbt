@@ -1,4 +1,4 @@
-ThisBuild / tlBaseVersion := "0.6" // your current series x.y
+ThisBuild / tlBaseVersion := "0.7" // your current series x.y
 
 ThisBuild / organization := "io.chrisdavenport"
 ThisBuild / organizationName := "Christopher Davenport"
@@ -10,22 +10,17 @@ ThisBuild / developers := List(
 
 ThisBuild / tlCiReleaseBranches := Seq("main")
 
-// true by default, set to false to publish to s01.oss.sonatype.org
-ThisBuild / tlSonatypeUseLegacyHost := true
-
-
-ThisBuild / crossScalaVersions := Seq("2.12.15", "2.13.8", "3.2.2")
-ThisBuild / scalaVersion := "2.13.8"
+ThisBuild / crossScalaVersions := Seq("2.12.21", "2.13.12", "3.3.7")
+ThisBuild / scalaVersion := "2.13.12"
 ThisBuild / versionScheme := Some("early-semver")
 
 val catsV = "2.9.0"
 val catsEffectV = "3.4.8"
 val shapelessV = "2.3.7"
 val fs2V = "3.6.1"
-val http4sV = "0.23.18"
-lazy val epimetheusV = "0.5.0"
+val http4sV = "0.23.26"
+lazy val epimetheusV = "0.6.0"
 val specs2V = "4.12.3"
-
 
 lazy val `epimetheus-http4s` = tlCrossRootProject
   .aggregate(core, push)
@@ -45,6 +40,10 @@ lazy val push = project.in(file("pushgateway"))
 
 lazy val site = project.in(file("site"))
   .dependsOn(core)
+  .settings(
+    scalaVersion := "3.3.7",
+    laikaTheme := laika.theme.Theme.empty
+  )
   .enablePlugins(TypelevelSitePlugin)
 
 lazy val sharedDeps = Seq(

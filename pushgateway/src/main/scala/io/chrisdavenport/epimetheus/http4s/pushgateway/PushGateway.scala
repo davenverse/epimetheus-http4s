@@ -8,12 +8,12 @@ import cats.implicits._
 import org.http4s.client._
 
 abstract class PushGateway[F[_]]{
-  def push(cr: CollectorRegistry[F], job: String): F[Unit]
+  def push(cr: PrometheusRegistry[F], job: String): F[Unit]
 
-  def push(cr: CollectorRegistry[F], job: String, groupingKey: Map[String, String]): F[Unit]
+  def push(cr: PrometheusRegistry[F], job: String, groupingKey: Map[String, String]): F[Unit]
 
-  def pushAdd(cr: CollectorRegistry[F], job: String): F[Unit]
-  def pushAdd(cr: CollectorRegistry[F], job: String, groupingKey: Map[String, String]): F[Unit]
+  def pushAdd(cr: PrometheusRegistry[F], job: String): F[Unit]
+  def pushAdd(cr: PrometheusRegistry[F], job: String, groupingKey: Map[String, String]): F[Unit]
 
   def delete(job: String): F[Unit]
   def delete(job: String, groupingKey: Map[String, String]): F[Unit]
@@ -26,14 +26,14 @@ object PushGateway {
   
 
   private class BasicPushGateway[F[_]: Concurrent](val client: Client[F], uri: Uri) extends PushGateway[F]{
-    def push(cr: CollectorRegistry[F], job: String): F[Unit] = 
+    def push(cr: PrometheusRegistry[F], job: String): F[Unit] =
       push(cr, job, Map.empty)
-    def push(cr: CollectorRegistry[F], job: String, groupingKey: Map[String, String]): F[Unit] =
+    def push(cr: PrometheusRegistry[F], job: String, groupingKey: Map[String, String]): F[Unit] =
       doPut(client, uri, job, groupingKey, cr)
 
-    def pushAdd(cr: CollectorRegistry[F], job: String): F[Unit] =
+    def pushAdd(cr: PrometheusRegistry[F], job: String): F[Unit] =
       pushAdd(cr, job, Map.empty)
-    def pushAdd(cr: CollectorRegistry[F], job: String, groupingKey: Map[String, String]): F[Unit] = 
+    def pushAdd(cr: PrometheusRegistry[F], job: String, groupingKey: Map[String, String]): F[Unit] =
       doPost(client, uri, job, groupingKey, cr)
 
     def delete(job: String): F[Unit] =
@@ -67,7 +67,7 @@ object PushGateway {
     baseUri: Uri,
     job: String,
     groupingKey: Map[String, String],
-    cr: CollectorRegistry[F]
+    cr: PrometheusRegistry[F]
   ): F[Unit] = {
     val uri = requestUrl(baseUri, job, groupingKey)
     cr.write004.flatMap{text =>
@@ -80,7 +80,7 @@ object PushGateway {
     baseUri: Uri,
     job: String,
     groupingKey: Map[String, String],
-    cr: CollectorRegistry[F]
+    cr: PrometheusRegistry[F]
   ): F[Unit] = {
     val uri = requestUrl(baseUri, job, groupingKey)
     cr.write004.flatMap{text =>

@@ -61,7 +61,7 @@ import io.chrisdavenport.epimetheus._
 object EpimetheusOps {
 
   def server[F[_]: Sync](
-    cr: CollectorRegistry[F],
+    cr: PrometheusRegistry[F],
     buckets: List[Double] = Histogram.defaults,
     reportMethod: Method => String = EpimetheusOps.defaultReportMethod,
     reportStatus: Status => String = EpimetheusOps.defaultReportStatus
@@ -69,7 +69,7 @@ object EpimetheusOps {
     register(cr, Name("org_http4s_server"), buckets, reportMethod, reportStatus)
 
   def client[F[_]: Sync](
-    cr: CollectorRegistry[F],
+    cr: PrometheusRegistry[F],
     buckets: List[Double] = Histogram.defaults,
     reportMethod: Method => String = EpimetheusOps.defaultReportMethod,
     reportStatus: Status => String = EpimetheusOps.defaultReportStatus
@@ -77,7 +77,7 @@ object EpimetheusOps {
     register(cr, Name("org_http4s_client"), buckets, reportMethod, reportStatus)
 
   def register[F[_]: Sync](
-    cr: CollectorRegistry[F], 
+    cr: PrometheusRegistry[F],
     prefix: Name,
     buckets: List[Double] = Histogram.defaults,
     reportMethod: Method => String = EpimetheusOps.defaultReportMethod,
@@ -136,7 +136,7 @@ object EpimetheusOps {
   )
   private object MetricsCollection {
     def build[F[_]: Sync](
-      cr: CollectorRegistry[F],
+      cr: PrometheusRegistry[F],
       prefix: Name, 
       buckets: List[Double],
       reportMethod: Method => String,
