@@ -42,6 +42,13 @@ lazy val push = project.in(file("pushgateway"))
 lazy val site = project.in(file("site"))
   .dependsOn(core)
   .enablePlugins(TypelevelSitePlugin)
+  .settings(
+    laikaTheme := tlSiteHelium.value.site
+      .topNavigationBar(
+        homeLink = laika.helium.config.IconLink.internal(laika.ast.Path.Root / "index.md", laika.helium.config.HeliumIcon.home)
+      )
+      .build
+  )
 
 lazy val sharedDeps = Seq(
   libraryDependencies ++= Seq(
