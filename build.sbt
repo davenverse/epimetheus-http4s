@@ -1,4 +1,4 @@
-ThisBuild / tlBaseVersion := "0.7" // your current series x.y
+ThisBuild / tlBaseVersion := "0.8" // your current series x.y
 
 ThisBuild / organization := "io.chrisdavenport"
 ThisBuild / organizationName := "Christopher Davenport"
@@ -10,16 +10,16 @@ ThisBuild / developers := List(
 
 ThisBuild / tlCiReleaseBranches := Seq()
 
-ThisBuild / crossScalaVersions := Seq("2.12.15", "2.13.18", "3.3.8")
+ThisBuild / crossScalaVersions := Seq("2.13.18", "3.3.8")
 ThisBuild / scalaVersion := "2.13.18"
 ThisBuild / versionScheme := Some("early-semver")
 
-val catsV = "2.9.0"
-val catsEffectV = "3.4.8"
+val catsV = "2.13.0"
+val catsEffectV = "3.7.1"
 val shapelessV = "2.3.7"
-val fs2V = "3.6.1"
-val http4sV = "0.23.18"
-lazy val epimetheusV = "0.5.0"
+val fs2V = "3.14.0"
+val http4sV = "0.23.37"
+lazy val epimetheusV = "0.7.1"
 val specs2V = "4.12.3"
 
 
@@ -63,6 +63,6 @@ lazy val sharedDeps = Seq(
 
       "io.chrisdavenport"           %% "epimetheus"                 % epimetheusV,
 
-      "org.typelevel" %% "munit-cats-effect-3" % "1.0.7" % Test,
+      "org.typelevel" %% "munit-cats-effect" % "2.2.1" % Test,
     )
 )
